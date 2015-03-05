@@ -56,16 +56,3 @@ months_name_ro = {
     'noiembrie': 11,
     'decembrie': 12
 }
-
-
-def get_file(name, path):
-    """ Returns all files with the given extension from the path specified.
-    :param name: file extension (".json", ".txt", ".xml", etc.)
-    :param path: absolute path to search in
-    :return: list of files with the given extension
-    """
-    result = []
-    for file in os.listdir(path):
-        if file.endswith(extension):
-            result.append(file)
-    return result
