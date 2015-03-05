@@ -17,9 +17,38 @@ def news_page_content(html_news_page):
     :return: [12 Feb 2015, 'Incepand cu data de 16.02.2015, se inchide circulatia pe str. ...]
     """
     bs = BeautifulSoup(html_news_page)
-    return [[div.h2.text, utils.remove_non_ascii(div.div.text)]
-            for div in bs.find_all('div', {'class': 'section'})
-            if div.find('div', {'class': 'continut'})]
+    result = {'publishdate': None, 'newscontent': None}
+
+    try:
+        title = bs.title.string
+    except AttributeError:
+        # Not an html page.
+        return result
+
+    # Not a news html page.
+    if not "Anunturi" in title:
+        return result;
+
+    all_divs = bs.find_all('div', {'class': 'section'})
+
+    if not all_divs:
+        return result
+
+    for div in all_divs:
+        if div.find('div', {'class': 'continut'}):
+            try:
+                result['publishdate'] = div.h2.text
+            except AttributeError:
+                # No header containing the date the news was published exists.
+                result['publishdate'] = None
+
+            try:
+                result['newscontent'] = utils.remove_non_ascii(div.div.text)
+            except AttributeError:
+                # No news body containing the actual news exists on the current html page.
+                result['newscontent'] = None
+
+    return result
 
 
 def news_page_links(tursib_ro):
