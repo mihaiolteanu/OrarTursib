@@ -13,7 +13,7 @@ import utils
 def news_page_content(html_news_page):
     """
     Extracts the news content from a html page.
-    :param html_news_page: html page such as http://tursib.ro/news/show/x, where x is the news ID
+    :param html_news_page: html page such as http://tursib.ro/news/show/160, where 160 is the news ID
     :return: [12 Feb 2015, 'Incepand cu data de 16.02.2015, se inchide circulatia pe str. ...]
     """
     bs = BeautifulSoup(html_news_page)
@@ -66,7 +66,7 @@ def news_page_links(tursib_ro):
 
 def update_string(tursib_ro_trasee):
     """
-    Extract the date of the last update to the busses routes and timetables.
+    Extract the string of the last update to the busses routes and timetables.
     :param tursib_ro_trasee: html page from www.tursib.ro/trasee containing a tag of the form:
     <h2 style="color:#900;">Program de circulatie incepand cu data de 15 septembrie 2014</h2>
     :return: text of the h2 tag
@@ -226,7 +226,7 @@ def remove_single_time_class(bus_timetable):
 
 def _timetable_comment(html_page):
     """
-    Extracts the comment from a html page with timetables.
+    Extracts the comment regarding the routing classes from a html page with timetables.
     The comment might not be pressent if there is just one routing class.
     :param html_page: html page from http://tursib.ro/traseu/1/program?statie=x&dir=y
     :return: Comment regarding the routes if more than one departure class is available (i.e. p0 and p1)
