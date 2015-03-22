@@ -18,17 +18,7 @@ def news_page_content(html_news_page):
     """
     bs = BeautifulSoup(html_news_page)
     result = {'publishdate': None, 'newscontent': None}
-
-    try:
-        title = bs.title.string
-    except AttributeError:
-        # Not an html page.
-        return result
-
-    # Not a news html page.
-    if not "Anunturi" in title:
-        return result;
-
+    
     all_divs = bs.find_all('div', {'class': 'section'})
 
     if not all_divs:
@@ -38,15 +28,10 @@ def news_page_content(html_news_page):
         if div.find('div', {'class': 'continut'}):
             try:
                 result['publishdate'] = div.h2.text
-            except AttributeError:
-                # No header containing the date the news was published exists.
-                result['publishdate'] = None
-
-            try:
                 result['newscontent'] = utils.remove_non_ascii(div.div.text)
             except AttributeError:
-                # No news body containing the actual news exists on the current html page.
-                result['newscontent'] = None
+                # No such tags exist, so probably this is not a news page.
+                pass
 
     return result
 
@@ -253,9 +238,28 @@ def _timetable_comment(html_page):
     return result
 
 
-news_160 = open(r'D:\Projects\Python\Lib\tsb\samples\news_160.htm')
-tursib_ro = open(r'D:\Projects\Python\Lib\tsb\samples\tursib_ro.htm')
-trasee = open(r'D:\Projects\Python\Lib\tsb\samples\tursib_ro_trasee.htm')
-tr1CEC = open(r'D:\Projects\Python\Lib\tsb\samples\TRASEUL 1 - CEC.htm')
-tr11_Conti = open(r'D:\Projects\Python\Lib\tsb\samples\TRASEUL 11 - SC CONTINENTAL.htm')
-tr11 = open(r'D:\Projects\Python\Lib\tsb\samples\TRASEUL 11.htm')
+import urllib.request
+# Retrieve html page from web.
+def html_retrieve(address):
+    # Check if address is an url.
+    return urllib.request.urlopen(address).read()
+
+
+def onthefly_testing():
+    import os
+    dir_name = os.path.join(os.path.dirname('__file__'), 'tests/samples')
+    # http://stackoverflow.com/questions/12468179/unicodedecodeerror-utf8-codec-cant-decode-byte-0x9c
+    with open(os.path.join(dir_name, "news_160.htm"), "r",encoding='utf-8', errors='ignore') as news_160, \
+         open(os.path.join(dir_name, "tursib_ro.htm"), "r",encoding='utf-8', errors='ignore') as tursib_ro, \
+         open(os.path.join(dir_name, "tursib_ro_trasee.htm"), "r",encoding='utf-8', errors='ignore') as tursib_ro_trasee, \
+         open(os.path.join(dir_name, "tursib_ro_traseu_11.htm"), "r",encoding='utf-8', errors='ignore') as tursib_ro_traseu_11, \
+         open(os.path.join(dir_name, "tursib_ro_traseu_11_Conti.htm"), "r",encoding='utf-8', errors='ignore') as tursib_ro_traseu_11_Conti, \
+         open(os.path.join(dir_name, "dummy_file.txt"), "r",encoding='utf-8', errors='ignore') as dummy_file:
+
+        #print (news_page_content(news_160))
+        print (news_page_content(dummy_file))
+        #print (news_page_links(dummy_file))
+
+
+#onthefly_testing()
+

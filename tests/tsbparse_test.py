@@ -11,47 +11,45 @@ class tsbparse_tests(unittest.TestCase):
         file = os.path.join(self.samples_path, name)
         return open(file, "r", encoding='utf-8', errors='ignore')
 
-        ### News Page Contents ###
-    def test_news_page_content_valid_html(self):
-        with self.open_file("news_160.htm") as valid_news_page:
-            parsed = tsbparse.news_page_content(valid_news_page)
-            self.assertTrue("12 Feb 2015" in parsed['publishdate'], parsed)
-            self.assertTrue("Incepand cu data de 16.02.2015" in parsed['newscontent'], parsed)
+    def test_news_page_content(self):
+        data = [
+            {'input': 'news_160.htm',   # Valid tursib page containing news.
+             'expected': {'publishdate': '12 Feb 2015','newscontent': 'Incepand cu data de 16.02.2015, se inchide circulatia'}},
+            {'input': 'tursib_ro.htm',  # Tursib page that does not contain any news.
+             'expected': {'publishdate': None, 'newscontent': None}},
+            {'input': 'dummy_file.txt', # Invalid / random file.
+             'expected': {'publishdate': None, 'newscontent': None}},
+            {'input': 'news_160_missing_publishdate_header.htm', # Modified the remove the 'publishdate' field.
+             'expected': {'publishdate': None, 'newscontent': None}},
+        ]
 
-    def test_news_page_content_not_news_page(self):
-        # Load a different tursib page that does not contain a news section.
-        with self.open_file("tursib_ro.htm") as not_news_page:
-            parsed = tsbparse.news_page_content(not_news_page)
-            self.assertIsNone(parsed['publishdate'])
-            self.assertIsNone(parsed['newscontent'])
+        for entry in data:
+             with self.open_file(entry['input']) as input_file:
+                 parsed = tsbparse.news_page_content(input_file)
+                 self.assertEqual(parsed['publishdate'], entry['expected']['publishdate'])
+                 # If there is something to compare
+                 if parsed['newscontent'] and entry['expected']['newscontent']:
+                     # Only check part of the news, as these can get quite big.
+                     self.assertTrue(entry['expected']['newscontent'] in parsed['newscontent'])
+                 else:
+                     # No news content, but is that what we expected?
+                     self.assertEqual(entry['expected']['newscontent'], parsed['newscontent'])
+                 
 
-    def test_news_page_content_not_html_page(self):
-        # Load a random file.
-        with self.open_file("dummy_file.txt") as not_html_page:
-            parsed = tsbparse.news_page_content(not_html_page)
-            self.assertIsNone(parsed['publishdate'])
-            self.assertIsNone(parsed['newscontent'])
+    def test_news_page_links(self):
+        data = [
+            {'input': 'tursib_ro.htm', # Valid tursib page containing links to news.
+             'expected': ['http://tursib.ro/news/show/161', 'http://tursib.ro/news/show/160', 'http://tursib.ro/news/show/159']},
 
-    def test_news_page_content_missing_publishdate_header(self):
-        # Load a news html file but without the <h2> header specifying the publish date.
-        with self.open_file("news_160_missing_publishdate_header.htm") as invalid_news_page:
-            parsed = tsbparse.news_page_content(invalid_news_page)
-            self.assertIsNone(parsed['publishdate'], None)
-            self.assertTrue("Incepand cu data de 16.02.2015" in parsed['newscontent'], parsed)
+            {'input': 'dummy_file.txt', # Invalid / random file.
+             'expected': []}
+        ]
 
-        ### News Page Links ###
-    def test_news_page_links_valid_html(self):
-        with self.open_file("tursib_ro.htm") as valid_page:
-            parsed = tsbparse.news_page_links(valid_page)
-            expected = ['http://tursib.ro/news/show/161', 'http://tursib.ro/news/show/160', 'http://tursib.ro/news/show/159']
-            self.assertEqual(expected, parsed)
-
-    def test_news_page_links_not_links_page(self):
-        # Load a different tursib pabge that does not contain news links
-        with self.open_file("tursib_ro_trasee.htm") as not_links_page:
-            parsed = tsbparse.news_page_links(not_links_page)
-            self.assertEqual([], parsed)
-            
+        for entry in data:
+            with self.open_file(entry['input']) as input_file:
+                parsed = tsbparse.news_page_links(input_file)
+                self.assertEqual(entry['expected'], parsed)
+       
 
 
 #if __name__ == '__main__':
