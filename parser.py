@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 import utils
 
 
-def news_page_content(html_news_page):
+def news_content(html_news_page):
     """Extracts the news content from a html page.
     :param html_news_page: html page such as http://tursib.ro/news/show/160, where 160 is the news ID
     :return: [12 Feb 2015, 'Incepand cu data de 16.02.2015, se inchide circulatia pe str. ...]"""
@@ -29,7 +29,7 @@ def news_page_content(html_news_page):
     return result
 
 
-def news_page_links(tursib_ro):
+def news_links(tursib_ro):
     """Returns the links to the latest news (usually three) posted by Tursib on their official page.
     :param tursib_ro: html page from www.tursib.ro
     :return ['http://tursib.ro/news/show/160', 'http://tursib.ro/news/show/159', 'http://tursib.ro/news/show/158']"""
@@ -54,7 +54,7 @@ def update_string(tursib_ro_trasee):
         return ""
 
 
-def buses_info(tursib_ro_trasee_html):
+def buses_list(tursib_ro_trasee_html):
     """Returns a list containing all the tursib buses in circulation.
     :param tursib_ro_trasee_html: html page from www.tursib.ro/trasee
     :return [... {'number': '15', 'name': 'Valea Aurie - Gara', 'link': 'http://tursib.ro/traseu/15'},
@@ -71,7 +71,6 @@ def buses_info(tursib_ro_trasee_html):
             bus_number = bus_link.split('/')[-1]
             bus_name = td.find('strong').text
             result.append({'number': bus_number, 'name': bus_name, 'link': bus_link})
-
     return result
 
 
@@ -143,13 +142,13 @@ def onthefly_testing():
          open(os.path.join(dir_name, "tursib_ro_traseu_112_Bosch.htm"), "r",encoding='utf-8', errors='ignore') as tursib_ro_traseu_112_Bosch, \
          open(os.path.join(dir_name, "dummy_file.txt"), "r",encoding='utf-8', errors='ignore') as dummy_file:
 
-        #print (news_page_content(news_160))
-        #print (news_page_content(dummy_file))
-        #print (news_page_links(tursib_ro))
+        #print (news_content(news_160.read()))
+        #print (news_links(tursib_ro))
         #print (update_string(tursib_ro_trasee))
         #print (buses_info(tursib_ro_trasee))
-        res = station_timetable(tursib_ro_traseu_112_Bosch)
-        #res = station_timetable(tursib_ro_traseu_11_Conti)
+        #res = station_timetable(tursib_ro_traseu_112_Bosch)
+        res = station_timetable(tursib_ro_traseu_11_Conti)
         print(res)
+        #pass
 
 onthefly_testing()
