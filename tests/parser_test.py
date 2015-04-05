@@ -1,9 +1,9 @@
 import unittest
 import os
-import tsbparse
+import parser
 
 
-class tsbparse_tests(unittest.TestCase):
+class parser_tests(unittest.TestCase):
     # Get the samples directory.
     samples = os.path.join(os.path.dirname('__file__'), 'tests/samples')
 
@@ -27,7 +27,7 @@ class tsbparse_tests(unittest.TestCase):
         ]
         for entry in data:
              f = self.fileread(entry['in'])
-             parsed = tsbparse.news_content(f)
+             parsed = parser.news_content(f)
              self.assertEqual(parsed['publishdate'], entry['exp']['publishdate'])
              # If there is something to compare
              if parsed['newscontent'] and entry['exp']['newscontent']:
@@ -47,7 +47,7 @@ class tsbparse_tests(unittest.TestCase):
         ]
         for entry in data:
             f = self.fileread(entry['in'])
-            parsed = tsbparse.news_links(f)
+            parsed = parser.news_links(f)
             self.assertEqual(entry['exp'], parsed)
        
 
@@ -62,11 +62,11 @@ class tsbparse_tests(unittest.TestCase):
         ]
         for entry in data:
             f = self.fileread(entry['in'])
-            parsed = tsbparse.update_string(f)
+            parsed = parser.update_string(f)
             self.assertEqual(entry['exp'], parsed, entry['in'])
 
 
-    def test_buses_info(self):
+    def test_buses_list(self):
         data = [
             {'in': 'tursib_ro_trasee.htm', # Valid tursib page containing the data of interest.
              'exp_count': 21, # Number of buses.
@@ -81,7 +81,7 @@ class tsbparse_tests(unittest.TestCase):
         ]
         for entry in data:
             f = self.fileread(entry['in'])
-            parsed = tsbparse.buses_info(f)
+            parsed = parser.buses_list(f)
             self.assertEqual(entry['exp_count'], len(parsed))
             # Go to the bus exp in the data list above.
             for item in parsed:
@@ -109,7 +109,7 @@ class tsbparse_tests(unittest.TestCase):
         ]
         for entry in data:
             f = self.fileread(entry['in'])
-            parsed = tsbparse.bus_stations(f)
+            parsed = parser.bus_stations(f)
             self.assertEqual(entry['exp_dcount'], len(parsed['directroutes']))
             self.assertEqual(entry['exp_rcount'], len(parsed['reverseroutes']))
             exp_dentry = entry['exp_dentry']
@@ -134,7 +134,7 @@ class tsbparse_tests(unittest.TestCase):
         ]
         for entry in data:
             f = self.fileread(entry['in'])
-            parsed = tsbparse.station_timetable(f)
+            parsed = parser.station_timetable(f)
             self.assertEqual(entry['exp'], parsed)
              
 
