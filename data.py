@@ -13,7 +13,7 @@
 # be again given to the html downloader and the resulting pages given 
 # to the parser.
 
-import tsbparse
+import parser
 #from utils import htmlget as htmlget
 from tests.utils_mock import htmlget as htmlget
 
@@ -21,24 +21,25 @@ def news():
     """:return: [{'publishdate': '...', 'newscontent': '...'}, {'publishdate':...}]"""
     result = []
     # Get the http links to the latest news from the tursib official page.
-    links = tsbparse.news_links(htmlget("tursib_ro"))
+    links = parser.news_links(htmlget("tursib_ro"))
     for link in links:
-        content = tsbparse.news_content(htmlget(link))
+        content = parser.news_content(htmlget(link))
         result.append(content)
     # Return the content of all the latest news found.
     return result
 
-def update():
-    return tsbparse.update_string(htmlget("trasee"))
+def bus_network_latest_update():
+    """Returns a string containing the info regarding the last update of the bus network."""
+    return parser.update_string(htmlget("trasee"))
 
 def bus_network():
     """Build the list with all tursib info."""
-    buseslist = tsbparse.buses_list(htmlget("trasee"))
+    buseslist = parser.buses_list(htmlget("trasee"))
     buses = {}
     bus_name_and_stations = []
     for bus in buseslist:
         # Contains a list of all the stations names and links for this bus.
-        stations = tsbparse.bus_stations(htmlget(bus['link']))
+        stations = parser.bus_stations(htmlget(bus['link']))
         direct_and_reverse = _get_direct_and_reverse_stations(stations)
         bus_name_and_stations.append({'name': bus['name'], "stations": direct_and_reverse})
         buses[bus['number']] = list(bus_name_and_stations)
@@ -48,7 +49,7 @@ def bus_network():
 def _get_station_name_and_timetable(station_name_link):
     result = []
     for station in station_name_link:
-        timetable = tsbparse.station_timetable(htmlget(station['link']))
+        timetable = parser.station_timetable(htmlget(station['link']))
         result.append({'name': station['name'], 'timetable': timetable})
     return result
 
@@ -57,11 +58,13 @@ def _get_direct_and_reverse_stations(stations):
     reverse = _get_station_name_and_timetable(stations['reverseroutes'])
     return {"direct": direct, "reverse": reverse}
 
+"""
 t = bus_network()
 encoded = json.dumps(t)
 f = open("output.json", 'w')
 f.write(encoded)
 f.close()
+"""
 
 #res = news()
 #print(res)
