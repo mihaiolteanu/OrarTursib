@@ -13,9 +13,9 @@
 # be again given to the html downloader and the resulting pages given 
 # to the parser.
 
-import parser
-#from utils import htmlget as htmlget
-from tests.utils_mock import htmlget as htmlget
+import tsbparser as parser
+from utils import htmlget as htmlget
+#from tests.utils_mock import htmlget as htmlget
 
 def news():
     """:return: [{'publishdate': '...', 'newscontent': '...'}, {'publishdate':...}]"""

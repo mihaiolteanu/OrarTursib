@@ -9,7 +9,6 @@
 from bs4 import BeautifulSoup
 import utils
 
-
 def news_content(html_news_page):
     """Extracts the news content from a html page.
     :param html_news_page: html page such as http://tursib.ro/news/show/160, where 160 is the news ID
@@ -147,8 +146,8 @@ def onthefly_testing():
         #print (update_string(tursib_ro_trasee))
         #print (buses_info(tursib_ro_trasee))
         #res = station_timetable(tursib_ro_traseu_112_Bosch)
-        res = station_timetable(tursib_ro_traseu_11_Conti)
-        print(res)
-        #pass
+        #res = station_timetable(tursib_ro_traseu_11_Conti)
+        #print(res)
+        pass
 
 onthefly_testing()
