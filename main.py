@@ -1,41 +1,57 @@
+import data
+import persistence
+from flask import Flask
+from flask.ext import restful
+from flask import jsonify
 
+app = Flask(__name__)
+api = restful.Api(app)
 
-def bus_network():
-    """:return: The Tursib bus network containing all the bus names, routes and timetables."""
-    return _get_bus_network_local()
+class News(restful.Resource):
+    def get(self):
+        ret = {"news": persistence.get_news()}
+        return jsonify(ret)
 
-def check_for_updates():
-    """Get a newer version of bus info if available."""
-    latest_update = _tursib_version()
-    local_update = _local_version()
+class Update(restful.Resource):
+    def get(self):
+        return persistence.get_network()['update']
+
+class BusNewtork(restful.Resource):
+    def get(self):
+        ret = {"busnetwork": persistence.get_network()}
+        return jsonify(ret)
+
+@app.route('/')
+def home():
+    return "<h3>Tursib web service</h3>"
+
+@app.route('/update_bus_network')
+def update_bus_network():
+    """Get a newer version of bus info if available.
+    Run this periodically."""
     # Download and save to local storage if a different version is available.
-    if latest_update != local_update:
-        bus_network_info = _bus_network_www_download()
-        _save_bus_network_local(bus_network_info)
+    if _new_version_available():
+        network = data.bus_network()
+        persistence.save_network(network)      
 
+def _new_version_available():
+    if _tursib_version() != _local_version():
+        return True
+    return False
 
 def _tursib_version():
     """:return: string containing the last update text"""
-    return tsbparse.update_string(htmlget("trasee"))
-
+    return data.bus_network_latest_update()
 
 def _local_version():
     """:return: Local version string of the bus network info."""
-    bus_network_local = _get_bus_network_local()
-    return bus_network_local['updatestring']
+    network = persistence.get_network()
+    return network['updatestring']
 
 
-def _get_bus_network_local():
-    """:return: Return the bus network info from local storage."""
-    path = os.path.dirname(__file__)
-    path = os.path.join(path, "bus_network.json")
-    json_file = open(path, 'r')
-    return json.loads(json_file.read())
+api.add_resource(News, '/news')
+api.add_resource(Update, '/update')
+api.add_resource(BusNewtork, '/busnetwork')
 
-
-def _save_bus_network_local(bus_network_info):
-    """Saves a copy of the bus network info to local storage for later retrieval."""
-    bus_network_json = json.dumps(bus_network_info)
-    f = open("bus_network.json", 'w')
-    f.write(bus_network_json)
-    f.close()
+if __name__ == '__main__':
+    app.run(debug=True)
