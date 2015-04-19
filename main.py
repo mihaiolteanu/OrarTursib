@@ -14,7 +14,7 @@ class News(restful.Resource):
 
 class Update(restful.Resource):
     def get(self):
-        return persistence.get_network()['update']
+        return persistence.get_network_update()
 
 class BusNewtork(restful.Resource):
     def get(self):
@@ -25,7 +25,6 @@ class BusNewtork(restful.Resource):
 def home():
     return "<h3>Tursib web service</h3>"
 
-@app.route('/update_bus_network')
 def update_bus_network():
     """Get a newer version of bus info if available.
     Run this periodically."""
@@ -33,20 +32,18 @@ def update_bus_network():
     if _new_version_available():
         network = data.bus_network()
         persistence.save_network(network)      
+        return "bus network updated"
+    else:
+        return "everything is already up to date"
 
 def _new_version_available():
-    if _tursib_version() != _local_version():
-        return True
-    return False
+    return _tursib_version() != _local_version()
 
 def _tursib_version():
-    """:return: string containing the last update text"""
     return data.bus_network_latest_update()
 
 def _local_version():
-    """:return: Local version string of the bus network info."""
-    network = persistence.get_network()
-    return network['updatestring']
+    return persistence.get_network_update()
 
 
 api.add_resource(News, '/news')

@@ -14,6 +14,9 @@ def get_network():
     json_file = open(path, 'r')
     return json.loads(json_file.read())
 
+def get_network_update():
+    return get_network()['update']
+
 def save_network(bus_network_info):
     """Saves a copy of the bus network info to local storage for later retrieval."""
     bus_network_json = json.dumps(bus_network_info)
