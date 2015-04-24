@@ -1,0 +1,35 @@
+#: import main main
+#: import ListItemButton kivy.uix.listview.ListItemButton
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import TabbedPanel kivy.uix.tabbedpanel
+
+MainMenu:
+
+<MainMenu>:
+    do_default_tab: False
+    bus_tab_content: bus_list
+    TabbedPanelItem:
+        text: "Buses"
+        BoxLayout:
+            ListView:
+                id: bus_list
+                adapter:
+                    ListAdapter(data=["1", "2", "3"], cls=main.BusButton)
+
+    TabbedPanelItem:
+        text: "Search"
+        Label:
+            text: "Search for routes"
+    TabbedPanelItem:
+        text: "Favorites"
+        Label:
+            text: "Add your favorite routes"
+    TabbedPanelItem:
+        text: "Settings"
+        Label:
+            text: "Different settings for tursib"
+
+<BusButton>:
+    size_hint_y: None
+    height: "40dp"
+    on_press: app.root.show_the_buses(self) 
