@@ -11,7 +11,10 @@ MainMenu:
     TabbedPanelItem:
         text: "Buses"
         id: bus_list
-        BusList:
+        on_touch_down: app.root.show_the_buses()
+        #BusList:
+        Label:
+            text: "seeee?"
             
     TabbedPanelItem:
         text: "Search"
@@ -31,20 +34,30 @@ MainMenu:
     ListView:
         id: list_view
         adapter:
-            ListAdapter(data=["1", "2", "3"], cls=main.BusButton)        
+            ListAdapter(data=[], cls=main.BusButton)        
 
 <BusButton>:
     size_hint_y: None
     height: "40dp"
-    on_press: app.root.show_the_buses(self) 
+    on_press: app.root.show_the_stations(self) 
 
 <StationsList@BoxLayout>:
     lst: list_view
-    ListView:
-        id: list_view
-        adapter:
-            ListAdapter(data=[], cls=main.StationButton)        
+    bus_number_name: ""
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            size_hint_y: None
+            height: "40dp"
+            markup: True
+            text: "[b]{}[/b]".format(root.bus_number_name)
+        ListView:
+            id: list_view
+            adapter:
+                ListAdapter(data=[], cls=main.StationButton)        
 
 <StationButton>:
+    station: ""
     size_hint_y: None
     height: "40dp"
+    on_press: app.root.show_the_timetable(self)
