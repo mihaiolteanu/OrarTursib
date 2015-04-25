@@ -12,23 +12,28 @@ from kivy.lang import Builder
 from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 
-class HelloApp(App):
+class TsbApp(App):
     pass
 
 class BusButton(ListItemButton):
     def list_bus_stations(self, instance):
         print("list bus stations " + instance.text)
 
+class StationButton(ListItemButton):
+    pass
+
 class MainMenu(TabbedPanel):
     bus_tab_content = ObjectProperty()
+
     def show_the_buses(self, instance):
-        #self.bus_tab_content.item_strings = ["Yo!", "bro!"]
-        #self.bus_tab_content.adapter.data.clear()
-        del self.bus_tab_content.adapter.data[:]
-        self.bus_tab_content.adapter.data.extend(["5", "6", "7"])
-        self.bus_tab_content._trigger_reset_populate()
-        print(instance.text)
+        self.clear_widgets()
+        stations_list = Factory.StationsList()
+        # Python2.7 workaround; see page 39 from "Creating Apps in Kivy"
+        del stations_list.lst.adapter.data[:]
+        stations_list.lst.adapter.data.extend(["station 1", "station 2", "station 3"])
+        stations_list.lst._trigger_reset_populate()
+        self.add_widget(stations_list)
 
 if __name__ == '__main__':
-    HelloApp().run()
+    TsbApp().run()
 

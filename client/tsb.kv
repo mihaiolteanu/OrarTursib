@@ -10,12 +10,9 @@ MainMenu:
     bus_tab_content: bus_list
     TabbedPanelItem:
         text: "Buses"
-        BoxLayout:
-            ListView:
-                id: bus_list
-                adapter:
-                    ListAdapter(data=["1", "2", "3"], cls=main.BusButton)
-
+        id: bus_list
+        BusList:
+            
     TabbedPanelItem:
         text: "Search"
         Label:
@@ -29,7 +26,25 @@ MainMenu:
         Label:
             text: "Different settings for tursib"
 
+<BusList@BoxLayout>:
+    lst: list_view
+    ListView:
+        id: list_view
+        adapter:
+            ListAdapter(data=["1", "2", "3"], cls=main.BusButton)        
+
 <BusButton>:
     size_hint_y: None
     height: "40dp"
     on_press: app.root.show_the_buses(self) 
+
+<StationsList@BoxLayout>:
+    lst: list_view
+    ListView:
+        id: list_view
+        adapter:
+            ListAdapter(data=[], cls=main.StationButton)        
+
+<StationButton>:
+    size_hint_y: None
+    height: "40dp"
