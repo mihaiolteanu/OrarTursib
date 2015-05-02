@@ -18,8 +18,7 @@ class Update(restful.Resource):
 
 class BusNewtork(restful.Resource):
     def get(self):
-        ret = {"busnetwork": persistence.get_network()}
-        return jsonify(ret)
+        return persistence.get_network()
 
 @app.route('/')
 def home():
