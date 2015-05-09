@@ -4,14 +4,13 @@ from kivy.uix.button import Button, Label
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelHeader
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.listview import ListView
-from kivy.uix.listview import ListItemButton
+from kivy.uix.listview import ListView, ListItemButton
 from kivy.adapters.listadapter import ListAdapter
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.modalview import ModalView
-from kivy.uix.scrollview import ScrollView
 from kivy.properties import ObjectProperty, ListProperty
+from kivy.uix.popup import Popup
 from scrollable import ScrollableLabel
+
+import data
 
 # Keep track of the root object.
 tsb_app = None
@@ -19,18 +18,40 @@ tsb_app = None
 class TsbApp(App):
     tp = None
     def build(self):
-        global tsb_app
-        tsb_app = self
+        global tsb_app; tsb_app = self
+        self._check_bus_network()
+        self._init_tabs()
+
+        return self.tp
+
+    def _check_bus_network(self):
+        popup = Popup(title="Bus network",
+                      content=Label(text="Loading bus network..."),
+                      size_hint=(0.5, 0.5))
+        if not data.bus_network_exists():
+            popup.open()
+            data.request_bus_network()
+
+    # Setup the initial content of the tabs.
+    def _init_tabs(self):
         self.tp = TabbedPanel()
+        self._setup_buses()
+        self._setup_favorites()
+        self._setup_search()
+
+    def _setup_buses(self):
         self.tp.default_tab.text = "Buses"
-        self.tp.default_tab.content = BusesList()        
+        self.tp.default_tab.content = BusesList()
+
+    def _setup_favorites(self):
         tp_favorites = TabbedPanelHeader(text="Favorites")
         tp_favorites.content = Label(text="Track your most used routes")
         self.tp.add_widget(tp_favorites)
+
+    def _setup_search(self):
         tp_search = TabbedPanelHeader(text="Search")
         tp_search.content = Label(text="You can search for routes here")
         self.tp.add_widget(tp_search)
-        return self.tp
 
     # Methods to clear and set the content of the buses tab.
     # The buses tab initially contains a list of all the available buses.
@@ -79,7 +100,8 @@ class BusesList(BoxLayout):
         super(BusesList, self).__init__(**kwargs)
         self.orientation = "vertical"
         list_view = ListView()
-        list_view.adapter = ListAdapter(data=["12", "23", "34"], cls=BusButton)
+        list_view.adapter = ListAdapter(data=data.buses(),
+                                        cls=BusButton)
         self.add_widget(list_view)
 
 class BusButton(ListItemButton):
@@ -164,6 +186,6 @@ class TimetableList(BoxLayout):
     def show_stations(self):
         tsb_app.show_stations()
 
+
 if __name__ == '__main__':
     TsbApp().run()
-
