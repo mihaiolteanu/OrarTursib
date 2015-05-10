@@ -24,6 +24,7 @@ class BusNewtork(restful.Resource):
 def home():
     return "<h3>Tursib web service</h3>"
 
+@app.route('/updatebusnetwork')
 def update_bus_network():
     """Get a newer version of bus info if available.
     Run this periodically."""
