@@ -14,8 +14,8 @@
 # to the parser.
 
 import tsbparser as parser
-#from utils import htmlget as htmlget
-from tests.utils_mock import htmlget as htmlget
+from utils import htmlget as htmlget
+#from tests.utils_mock import htmlget as htmlget
 
 def news():
     """:return: [{'publishdate': '...', 'newscontent': '...'}, {'publishdate':...}]"""
@@ -59,14 +59,14 @@ def _get_station_name_and_timetable(station_name_link):
         result.append({'name': station['name'], 'timetable': timetable})
     return result
 
-
+"""
 import json
 t = bus_network()
 encoded = json.dumps(t)
 f = open("output.json", 'w')
 f.write(encoded)
 f.close()
-
+"""
 
 #res = news()
 #print(res)
