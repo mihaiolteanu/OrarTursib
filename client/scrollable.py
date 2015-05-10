@@ -4,8 +4,6 @@ from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
 from kivy.lang import Builder
 
-long_text = 'yay moo cow foo bar moo baa ' * 100
-
 Builder.load_string('''
 <ScrollableLabel>:
     Label:
@@ -13,6 +11,7 @@ Builder.load_string('''
         height: self.texture_size[1]
         text_size: self.width, None
         text: root.text
+        markup: True
 ''')
 
 class ScrollableLabel(ScrollView):

@@ -42,14 +42,63 @@ def bus_network():
 def buses():
     result = []
     try:
-        buses = bus_network()['bus']
+        buses = bus_network()['buses']
         for bus in buses:
-            # TODO buses[bus][0]['name'] should be [bus]['name'] - change it in server side.
-            name_and_number = "{} - {}".format(bus, buses[bus][0]['name'])
-            result.append(name_and_number)
+            result.append(bus['name'])
         return result
-        #return sorted(buses.keys())
     except Exception as e:
         return {"nothing to see here!"}
 
+# Return all the info for the bus with this name.
+def _bus_info(bus_name):
+    buses = bus_network()['buses']
+    for idx, bus in enumerate(buses):
+        if bus['name'] == bus_name:
+            return buses[idx]
+    return []
 
+# Return all the info for the given station name on this route.
+def _station_info(route, station_name):
+    for idx, station in enumerate(route):
+        if station['name'] == station_name:
+            return route[idx]
+    return []
+
+# Direct route names for the given bus.
+def droute_names(bus_name):
+    return _route_names(bus_name, "droute")
+
+# Reverse route names for the given bus.
+def rroute_names(bus_name):
+    return _route_names(bus_name, "rroute")
+
+# Return a list of all station names for the given bus.
+def _route_names(bus_name, direction):
+    result = []
+    bus = _bus_info(bus_name)
+    for station in bus[direction]:
+        result.append(station['name'])
+    return result
+
+# Returns the timetable for the given unique station.
+def timetable(bus_name, station_name, direction):
+    bus = _bus_info(bus_name)
+    if not bus:
+        logging.error("tsbapp - \"{}\" bus name does not exist".format(bus_name))
+        return []
+    station = _station_info(bus[direction], station_name)
+    if not station:
+        logging.error("tsbapp - \"{}\" station name does not exist".format(station_name))
+        return []
+    return station['timetable']
+
+
+def _timetable(self):
+    ttable = data.timetable(tsb_app.selected_bus,
+                            tsb_app.selected_station,
+                            tsb_app.selected_direction)
+    formated = " Weekdays: {} \n Saturday: {} \n Sunday: {}".format(
+        ", ".join(ttable['weekdays']),
+        ", ".join(ttable['saturday']),
+        ", ".join(ttable['sunday']))
+    return formated

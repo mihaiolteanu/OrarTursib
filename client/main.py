@@ -65,7 +65,6 @@ class TsbApp(App):
     @property
     def selected_bus(self):
         return self._selected_bus
-
     @selected_bus.setter
     def selected_bus(self, bus_number):
         self._selected_bus = bus_number
@@ -73,10 +72,19 @@ class TsbApp(App):
     @property
     def selected_station(self):
         return self._selected_station
-
     @selected_station.setter
     def selected_station(self, station_name):
         self._selected_station = station_name
+
+    # Used to diferentiate between the direct and reverse
+    # routes after a station name is selected from the bus
+    # station names.
+    @property
+    def selected_direction(self):
+        return self._selected_direction
+    @selected_direction.setter
+    def selected_direction(self, route):
+        self._selected_direction = route
 
     @property
     def buses_tab_content(self):
@@ -122,15 +130,27 @@ class StationsList(BoxLayout):
         self.orientation = "vertical"
 
         box_layout = BoxLayout(orientation="vertical")
+        # Display the selected bus at the top of the page.
         bus_number_name = Label(text="[b]{}[/b]".format(selected_bus),
                                 size_hint_y=None,
                                 height="40dp",
                                 markup=True)                                
         box_layout.add_widget(bus_number_name)      
 
-        stations = ListView()
-        stations.adapter = ListAdapter(data=["station 12", "station 23", "station 34"], cls=StationButton)
-        box_layout.add_widget(stations)
+        droute = ListView()
+        droute.adapter = ListAdapter(data=data.droute_names(tsb_app.selected_bus), cls=StationButtonDirect)
+
+        rroute = ListView()
+        rroute.adapter = ListAdapter(data=data.rroute_names(tsb_app.selected_bus), cls=StationButtonReverse)
+
+        # Add tabbed panel to select the route direction (direct / reverse).
+        direction_panel = TabbedPanel()
+        direction_panel.default_tab.text = "Direct"
+        direction_panel.default_tab.content = droute
+        rtab = TabbedPanelHeader(text="Reverse")
+        rtab.content = rroute
+        direction_panel.add_widget(rtab)
+        box_layout.add_widget(direction_panel)
 
         cancel_btn = Button(text="Cancel", size_hint_y=None, height="40dp")
         cancel_btn.on_press = self.show_buses
@@ -141,15 +161,28 @@ class StationsList(BoxLayout):
     def show_buses(self):
         tsb_app.show_buses()
 
-class StationButton(ListItemButton):
+class StationButtonDirect(ListItemButton):
     def __init__(self, **kwargs):
-        super(StationButton, self).__init__(**kwargs)
+        super(StationButtonDirect, self).__init__(**kwargs)
         self.size_hint_y = None
         self.height = "40dp"
         self.on_press = self.show_timetable
     
     def show_timetable(self):
         tsb_app.selected_station = self.text
+        tsb_app.selected_direction = "droute"
+        tsb_app.show_timetable()
+
+class StationButtonReverse(ListItemButton):
+    def __init__(self, **kwargs):
+        super(StationButtonReverse, self).__init__(**kwargs)
+        self.size_hint_y = None
+        self.height = "40dp"
+        self.on_press = self.show_timetable
+    
+    def show_timetable(self):
+        tsb_app.selected_station = self.text
+        tsb_app.selected_direction = "rroute"
         tsb_app.show_timetable()
 
         
@@ -160,21 +193,19 @@ class TimetableList(BoxLayout):
 
         box_layout = BoxLayout(orientation="vertical")
 
+        # Display the bus and station name at the top of the page.
         bus_number_name = Label(text="[b]{}[/b]".format(selected_bus),
                                 size_hint_y=None,
                                 height="40dp",
                                 markup=True)
         box_layout.add_widget(bus_number_name)
-
         station_name = Label(text="[b]{}[/b]".format(selected_station),
                              size_hint_y=None,
                              height="40dp",
                              markup=True)
         box_layout.add_widget(station_name)
 
-        tm = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 "
-
-        some_label = ScrollableLabel(text=10*tm)
+        some_label = ScrollableLabel(text=self.timetable(), markup=True)
         box_layout.add_widget(some_label)
     
         cancel_btn = Button(text="Cancel", size_hint_y=None, height="40dp")
@@ -186,6 +217,15 @@ class TimetableList(BoxLayout):
     def show_stations(self):
         tsb_app.show_stations()
 
+    def timetable(self):
+        ttable = data.timetable(tsb_app.selected_bus,
+                                  tsb_app.selected_station,
+                                  tsb_app.selected_direction)
+        formated = "  [b]Weekdays[/b]:\n {} \n [b]Saturday[/b]:\n {} \n [b]Sunday[/b]:\n {}".format(
+            ", ".join(ttable['weekdays']),
+            ", ".join(ttable['saturday']),
+            ", ".join(ttable['sunday']))
+        return formated
 
 if __name__ == '__main__':
     TsbApp().run()
