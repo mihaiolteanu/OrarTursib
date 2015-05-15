@@ -39,6 +39,7 @@ def bus_network():
             # Gotta try again later, somehow.
             pass
 
+# Returns all the buses names.
 def buses():
     result = []
     try:
@@ -92,13 +93,11 @@ def timetable(bus_name, station_name, direction):
         return []
     return station['timetable']
 
+def add_to_favorites(bus_name, station_name, direction):
+    persistence.add_to_favorites(bus_name, station_name, direction)
 
-def _timetable(self):
-    ttable = data.timetable(tsb_app.selected_bus,
-                            tsb_app.selected_station,
-                            tsb_app.selected_direction)
-    formated = " Weekdays: {} \n Saturday: {} \n Sunday: {}".format(
-        ", ".join(ttable['weekdays']),
-        ", ".join(ttable['saturday']),
-        ", ".join(ttable['sunday']))
-    return formated
+def remove_from_favorites(bus_name, station_name, direction):
+    persistence.remove_from_favorites(bus_name, station_name, direction)
+
+def get_favorites():
+    return persistence.get_favorites()

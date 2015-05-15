@@ -7,7 +7,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.listview import ListView, ListItemButton
 from kivy.adapters.listadapter import ListAdapter
 from kivy.properties import ObjectProperty, ListProperty
-from kivy.uix.popup import Popup
+from kivy.core.window import Window
 from scrollable import ScrollableLabel
 
 import data
@@ -16,25 +16,19 @@ import data
 tsb_app = None
 
 class TsbApp(App):
-    tp = None
+    tp = TabbedPanel()
     def build(self):
         global tsb_app; tsb_app = self
         self._check_bus_network()
         self._init_tabs()
-
         return self.tp
 
     def _check_bus_network(self):
-        popup = Popup(title="Bus network",
-                      content=Label(text="Loading bus network..."),
-                      size_hint=(0.5, 0.5))
         if not data.bus_network_exists():
-            popup.open()
             data.request_bus_network()
 
     # Setup the initial content of the tabs.
     def _init_tabs(self):
-        self.tp = TabbedPanel()
         self._setup_buses()
         self._setup_favorites()
         self._setup_search()
@@ -44,16 +38,19 @@ class TsbApp(App):
         self.tp.default_tab.content = BusesList()
 
     def _setup_favorites(self):
-        tp_favorites = TabbedPanelHeader(text="Favorites")
-        tp_favorites.content = Label(text="Track your most used routes")
+        tp_favorites = TabbedPanelHeader(text="Favorites",
+                                         content=Label(text="You don't have any favorite routes yet"))
         self.tp.add_widget(tp_favorites)
+        #self.show_favorites()
 
     def _setup_search(self):
         tp_search = TabbedPanelHeader(text="Search")
         tp_search.content = Label(text="You can search for routes here")
         self.tp.add_widget(tp_search)
 
+    ######################################################
     # Methods to clear and set the content of the buses tab.
+    #######################################################
     # The buses tab initially contains a list of all the available buses.
     # The user can select and bus and the content will change to a list 
     # of all the stations for that particular bus. The user can cancel 
@@ -102,15 +99,29 @@ class TsbApp(App):
         self.buses_tab_content.clear_widgets()
         self.buses_tab_content.add_widget(TimetableList(self.selected_bus, self.selected_station))
 
+    #######################################
+    # Methods for the favorites tab.
+    #######################################
+    @property
+    def favorites_content(self):
+        return self.tp.tp_favorites
+    def show_favorites(self):
+        favorites = data.get_favorites()
+        if not favorites:
+            return
+        favorites_text = ""
+        for fav in favorites:
+            favorites_text = favorites_text + " " + fav['bus']
+            tp_favorites.content = Label(text=favorites_text)    
+
 
 class BusesList(BoxLayout):
     def __init__(self, **kwargs):
         super(BusesList, self).__init__(**kwargs)
         self.orientation = "vertical"
-        list_view = ListView()
-        list_view.adapter = ListAdapter(data=data.buses(),
-                                        cls=BusButton)
-        self.add_widget(list_view)
+        self.add_widget(ListView(
+            adapter=ListAdapter(data=data.buses(), cls=BusButton)))
+
 
 class BusButton(ListItemButton):
     def __init__(self, **kwargs):
@@ -131,32 +142,28 @@ class StationsList(BoxLayout):
 
         box_layout = BoxLayout(orientation="vertical")
         # Display the selected bus at the top of the page.
-        bus_number_name = Label(text="[b]{}[/b]".format(selected_bus),
-                                size_hint_y=None,
-                                height="40dp",
-                                markup=True)                                
-        box_layout.add_widget(bus_number_name)      
+        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(selected_bus)))
 
-        droute = ListView()
-        droute.adapter = ListAdapter(data=data.droute_names(tsb_app.selected_bus), cls=StationButtonDirect)
+        droute = ListView(adapter=ListAdapter(data=data.droute_names(tsb_app.selected_bus), 
+                                              cls=StationButtonDirect))
+        rroute = ListView(adapter=ListAdapter(data=data.rroute_names(tsb_app.selected_bus), 
+                                              cls=StationButtonReverse))
 
-        rroute = ListView()
-        rroute.adapter = ListAdapter(data=data.rroute_names(tsb_app.selected_bus), cls=StationButtonReverse)
-
-        # Add tabbed panel to select the route direction (direct / reverse).
-        direction_panel = TabbedPanel()
-        direction_panel.default_tab.text = "Direct"
-        direction_panel.default_tab.content = droute
-        rtab = TabbedPanelHeader(text="Reverse")
-        rtab.content = rroute
-        direction_panel.add_widget(rtab)
-        box_layout.add_widget(direction_panel)
-
-        cancel_btn = Button(text="Cancel", size_hint_y=None, height="40dp")
-        cancel_btn.on_press = self.show_buses
-        box_layout.add_widget(cancel_btn)
+        # Make it possible to select the route (direct or reverse).
+        route_panel = TabbedPanel(default_tab_text="Direct", 
+                                  default_tab_content=droute)
+        route_panel.add_widget(TabbedPanelHeader(text="Reverse", 
+                                                 content=rroute))
+        box_layout.add_widget(route_panel)
 
         self.add_widget(box_layout)
+        Window.bind(on_keyboard=self.on_back_button)
+
+    def on_back_button(self, window, key, *args):
+        if key == 27:
+            self.show_buses()
+            return True
+        return False
 
     def show_buses(self):
         tsb_app.show_buses()
@@ -190,32 +197,40 @@ class TimetableList(BoxLayout):
     def __init__(self, selected_bus, selected_station, **kwargs):
         super(TimetableList, self).__init__(**kwargs)
         self.orientation = "vertical"
-
         box_layout = BoxLayout(orientation="vertical")
 
         # Display the bus and station name at the top of the page.
-        bus_number_name = Label(text="[b]{}[/b]".format(selected_bus),
-                                size_hint_y=None,
-                                height="40dp",
-                                markup=True)
-        box_layout.add_widget(bus_number_name)
-        station_name = Label(text="[b]{}[/b]".format(selected_station),
-                             size_hint_y=None,
-                             height="40dp",
-                             markup=True)
-        box_layout.add_widget(station_name)
+        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(selected_bus)))
+        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(selected_station)))
+        box_layout.add_widget(ScrollableLabel(text=self.timetable(), 
+                                              markup=True))
 
-        some_label = ScrollableLabel(text=self.timetable(), markup=True)
-        box_layout.add_widget(some_label)
-    
-        cancel_btn = Button(text="Cancel", size_hint_y=None, height="40dp")
-        cancel_btn.on_press = self.show_stations
-        box_layout.add_widget(cancel_btn)
+        # Make it possible to add/ remove this station to the list of favorites.
+        remove_btn = MyButton(text="Remove from favorites",
+                              on_press=self.remove_from_favorites)
+        add_btn = MyButton(text="Add to favorites",
+                           on_press=self.add_to_favorites)
 
+        # Specify the size to fit the add/remove buttons 
+        favorites_btns = BoxLayout(orientation="horizontal", 
+                                   size_hint_y=None, 
+                                   height="50dp")
+        favorites_btns.add_widget(remove_btn)
+        favorites_btns.add_widget(add_btn)
+        box_layout.add_widget(favorites_btns)
         self.add_widget(box_layout)
+        Window.bind(on_keyboard=self.on_back_button)
 
-    def show_stations(self):
-        tsb_app.show_stations()
+    def add_to_favorites(self, instance):
+        data.add_to_favorites(tsb_app.selected_bus,
+                              tsb_app.selected_station,
+                              tsb_app.selected_direction)
+        
+
+    def remove_from_favorites(self, instance):
+        data.remove_from_favorites(tsb_app.selected_bus,
+                                   tsb_app.selected_station,
+                                   tsb_app.selected_direction)
 
     def timetable(self):
         ttable = data.timetable(tsb_app.selected_bus,
@@ -226,6 +241,31 @@ class TimetableList(BoxLayout):
             ", ".join(ttable['saturday']),
             ", ".join(ttable['sunday']))
         return formated
+
+    def on_back_button(self, window, key, *args):
+        if key == 27:
+            self.show_stations()
+            return True
+        return False
+
+    def show_stations(self):
+        tsb_app.show_stations()
+
+# Standard label to be used throughout the application.
+class MyLabel(Label):
+    def __init__(self, **kwargs):
+        super(MyLabel, self).__init__(**kwargs)
+        self.size_hint_y = None
+        self.height = "40dp"
+        self.markup = True
+
+# Standard button to be used throughout the application.
+class MyButton(Button):
+    def __init__(self, **kwargs):
+        super(Button, self).__init__(**kwargs)
+        self.size_hint_y = None
+        self.height = "50dp"
+    
 
 if __name__ == '__main__':
     TsbApp().run()
