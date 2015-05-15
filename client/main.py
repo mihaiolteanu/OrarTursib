@@ -205,32 +205,9 @@ class TimetableList(BoxLayout):
         box_layout.add_widget(ScrollableLabel(text=self.timetable(), 
                                               markup=True))
 
-        # Make it possible to add/ remove this station to the list of favorites.
-        remove_btn = MyButton(text="Remove from favorites",
-                              on_press=self.remove_from_favorites)
-        add_btn = MyButton(text="Add to favorites",
-                           on_press=self.add_to_favorites)
-
-        # Specify the size to fit the add/remove buttons 
-        favorites_btns = BoxLayout(orientation="horizontal", 
-                                   size_hint_y=None, 
-                                   height="50dp")
-        favorites_btns.add_widget(remove_btn)
-        favorites_btns.add_widget(add_btn)
-        box_layout.add_widget(favorites_btns)
         self.add_widget(box_layout)
         Window.bind(on_keyboard=self.on_back_button)
 
-    def add_to_favorites(self, instance):
-        data.add_to_favorites(tsb_app.selected_bus,
-                              tsb_app.selected_station,
-                              tsb_app.selected_direction)
-        
-
-    def remove_from_favorites(self, instance):
-        data.remove_from_favorites(tsb_app.selected_bus,
-                                   tsb_app.selected_station,
-                                   tsb_app.selected_direction)
 
     def timetable(self):
         ttable = data.timetable(tsb_app.selected_bus,

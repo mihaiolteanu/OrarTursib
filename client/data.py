@@ -92,12 +92,3 @@ def timetable(bus_name, station_name, direction):
         logging.error("tsbapp - \"{}\" station name does not exist".format(station_name))
         return []
     return station['timetable']
-
-def add_to_favorites(bus_name, station_name, direction):
-    persistence.add_to_favorites(bus_name, station_name, direction)
-
-def remove_from_favorites(bus_name, station_name, direction):
-    persistence.remove_from_favorites(bus_name, station_name, direction)
-
-def get_favorites():
-    return persistence.get_favorites()
