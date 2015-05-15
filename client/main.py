@@ -78,21 +78,6 @@ class TsbApp(App):
         self.buses_tab_content.clear_widgets()
         self.buses_tab_content.add_widget(TimetableList(self.selected_bus, self.selected_station))
 
-    #######################################
-    # Methods for the favorites tab.
-    #######################################
-    @property
-    def favorites_content(self):
-        return self.tp.tp_favorites
-    def show_favorites(self):
-        favorites = data.get_favorites()
-        if not favorites:
-            return
-        favorites_text = ""
-        for fav in favorites:
-            favorites_text = favorites_text + " " + fav['bus']
-            tp_favorites.content = Label(text=favorites_text)    
-
 
 class BusesList(BoxLayout):
     def __init__(self, **kwargs):
