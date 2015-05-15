@@ -16,37 +16,16 @@ import data
 tsb_app = None
 
 class TsbApp(App):
-    tp = TabbedPanel()
+    tp = BoxLayout()
     def build(self):
         global tsb_app; tsb_app = self
         self._check_bus_network()
-        self._init_tabs()
+        self.tp.add_widget(BusesList())
         return self.tp
 
     def _check_bus_network(self):
         if not data.bus_network_exists():
             data.request_bus_network()
-
-    # Setup the initial content of the tabs.
-    def _init_tabs(self):
-        self._setup_buses()
-        self._setup_favorites()
-        self._setup_search()
-
-    def _setup_buses(self):
-        self.tp.default_tab.text = "Buses"
-        self.tp.default_tab.content = BusesList()
-
-    def _setup_favorites(self):
-        tp_favorites = TabbedPanelHeader(text="Favorites",
-                                         content=Label(text="You don't have any favorite routes yet"))
-        self.tp.add_widget(tp_favorites)
-        #self.show_favorites()
-
-    def _setup_search(self):
-        tp_search = TabbedPanelHeader(text="Search")
-        tp_search.content = Label(text="You can search for routes here")
-        self.tp.add_widget(tp_search)
 
     ######################################################
     # Methods to clear and set the content of the buses tab.
@@ -85,7 +64,7 @@ class TsbApp(App):
 
     @property
     def buses_tab_content(self):
-        return self.tp.default_tab.content
+        return self.tp
 
     def show_buses(self):
         self.buses_tab_content.clear_widgets()
