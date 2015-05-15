@@ -48,6 +48,14 @@ class TsbApp(App):
         self.buses_tab_content.add_widget(TimetableList(self.selected_bus, self.selected_station))
 
 
+# Standard button to be used throughout the application.
+class MyButton(Button):
+    def __init__(self, **kwargs):
+        super(Button, self).__init__(**kwargs)
+        self.size_hint_y = None
+        self.height = "50dp"
+
+
 class BusesList(BoxLayout):
     def __init__(self, **kwargs):
         super(BusesList, self).__init__(**kwargs)
@@ -56,11 +64,9 @@ class BusesList(BoxLayout):
             adapter=ListAdapter(data=data.buses(), cls=BusButton)))
 
 
-class BusButton(ListItemButton):
+class BusButton(ListItemButton, MyButton):
     def __init__(self, **kwargs):
         super(BusButton, self).__init__(**kwargs)
-        self.size_hint_y = None
-        self.height = "40dp"
         self.on_press = self.show_stations
 
     def show_stations(self):
@@ -101,11 +107,9 @@ class StationsList(BoxLayout):
     def show_buses(self):
         tsb_app.show_buses()
 
-class StationButtonDirect(ListItemButton):
+class StationButtonDirect(ListItemButton, MyButton):
     def __init__(self, **kwargs):
         super(StationButtonDirect, self).__init__(**kwargs)
-        self.size_hint_y = None
-        self.height = "40dp"
         self.on_press = self.show_timetable
     
     def show_timetable(self):
@@ -113,11 +117,9 @@ class StationButtonDirect(ListItemButton):
         tsb_app.selected_direction = "droute"
         tsb_app.show_timetable()
 
-class StationButtonReverse(ListItemButton):
+class StationButtonReverse(ListItemButton, MyButton):
     def __init__(self, **kwargs):
         super(StationButtonReverse, self).__init__(**kwargs)
-        self.size_hint_y = None
-        self.height = "40dp"
         self.on_press = self.show_timetable
     
     def show_timetable(self):
@@ -169,12 +171,7 @@ class MyLabel(Label):
         self.height = "40dp"
         self.markup = True
 
-# Standard button to be used throughout the application.
-class MyButton(Button):
-    def __init__(self, **kwargs):
-        super(Button, self).__init__(**kwargs)
-        self.size_hint_y = None
-        self.height = "50dp"
+
     
 
 if __name__ == '__main__':
