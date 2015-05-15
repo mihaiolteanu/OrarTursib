@@ -17,6 +17,14 @@ tsb_app = None
 
 class TsbApp(App):
     tp = BoxLayout()
+    buses_tab_content = tp
+    selected_bus = None
+    selected_station = None
+    # Used to diferentiate between the direct and reverse
+    # routes after a station name is selected from the bus
+    # station names.
+    selected_direction = None
+
     def build(self):
         global tsb_app; tsb_app = self
         self._check_bus_network()
@@ -26,45 +34,6 @@ class TsbApp(App):
     def _check_bus_network(self):
         if not data.bus_network_exists():
             data.request_bus_network()
-
-    ######################################################
-    # Methods to clear and set the content of the buses tab.
-    #######################################################
-    # The buses tab initially contains a list of all the available buses.
-    # The user can select and bus and the content will change to a list 
-    # of all the stations for that particular bus. The user can cancel 
-    # the selection and return to the initial list, or she can select a
-    # station name and be presented with the timetable for that station.
-    # At every step, the bus number and/or station name are recorded 
-    # and used to show the user the current selection as well as to know
-    # where to return to in case the user cancels the selection.
-    @property
-    def selected_bus(self):
-        return self._selected_bus
-    @selected_bus.setter
-    def selected_bus(self, bus_number):
-        self._selected_bus = bus_number
-
-    @property
-    def selected_station(self):
-        return self._selected_station
-    @selected_station.setter
-    def selected_station(self, station_name):
-        self._selected_station = station_name
-
-    # Used to diferentiate between the direct and reverse
-    # routes after a station name is selected from the bus
-    # station names.
-    @property
-    def selected_direction(self):
-        return self._selected_direction
-    @selected_direction.setter
-    def selected_direction(self, route):
-        self._selected_direction = route
-
-    @property
-    def buses_tab_content(self):
-        return self.tp
 
     def show_buses(self):
         self.buses_tab_content.clear_widgets()
