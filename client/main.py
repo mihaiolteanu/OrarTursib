@@ -62,6 +62,13 @@ class BusesList(BoxLayout):
         self.orientation = "vertical"
         self.add_widget(ListView(
             adapter=ListAdapter(data=data.buses(), cls=BusButton)))
+        Window.bind(on_keyboard=self.on_back_button)
+
+    def on_back_button(self, window, key, *args):
+        if key == 27:
+            App.get_running_app().stop()
+            return True
+        return False
 
 
 class BusButton(ListItemButton, MyButton):
