@@ -40,7 +40,7 @@ def bus_network():
             pass
 
 # Returns all the buses names.
-def buses():
+def bus_names():
     result = []
     try:
         buses = bus_network()['buses']
@@ -48,7 +48,7 @@ def buses():
             result.append(bus['name'])
         return result
     except Exception as e:
-        return {"nothing to see here!"}
+        return []
 
 # Return the last update string, if available.
 def update():

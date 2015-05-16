@@ -34,7 +34,7 @@ class TsbApp(App):
         self.content.clear_widgets()
         self.content.add_widget(MyLabel(text="[b]{}[/b]".format("Orar Tursib")))
         self.content.add_widget(BusesList())
-        self.content.add_widget(MyLabel(text="[b]{}[/b]".format(data.update())))
+        self.content.add_widget(MyLabel(text=data.update()))
 
     def show_stations(self):
         self.content.clear_widgets()
@@ -57,8 +57,14 @@ class BusesList(BoxLayout):
     def __init__(self, **kwargs):
         super(BusesList, self).__init__(**kwargs)
         self.orientation = "vertical"
-        self.add_widget(ListView(
-            adapter=ListAdapter(data=data.buses(), cls=BusButton)))
+        # Try to retrieve the buses list.
+        buses_list = data.bus_names()
+        if not buses_list:
+            tsb_app.content.add_widget(ScrollableLabel(text="""Baza de date cu autobuze nu a putut fi gasita.
+Va rugam verificati accesul la internet si reporniti aplicatia."""))
+        else:
+            self.add_widget(ListView(
+                adapter=ListAdapter(data=buses_list, cls=BusButton)))
         Window.bind(on_keyboard=self.on_back_button)
 
     # Rebind the back button to exit the application.
