@@ -79,26 +79,50 @@ class BusButton(ListItemButton, MyButton):
 class StationsList(BoxLayout):
     def __init__(self, selected_bus, **kwargs):
         super(StationsList, self).__init__(**kwargs)
+        self.selected_bus = selected_bus
         self.orientation = "vertical"
+        self.show_stations()
+        Window.bind(on_keyboard=self.on_back_button)
 
+    def show_stations(self, direction="droute"):
+        self.clear_widgets()
         box_layout = BoxLayout(orientation="vertical")
         # Display the selected bus at the top of the page.
-        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(selected_bus)))
-
-        droute = ListView(adapter=ListAdapter(data=data.droute_names(tsb_app.selected_bus), 
-                                              cls=StationButtonDirect))
-        rroute = ListView(adapter=ListAdapter(data=data.rroute_names(tsb_app.selected_bus), 
-                                              cls=StationButtonReverse))
+        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(self.selected_bus)))
 
         # Make it possible to select the route (direct or reverse).
-        route_panel = TabbedPanel(default_tab_text="Direct", 
-                                  default_tab_content=droute)
-        route_panel.add_widget(TabbedPanelHeader(text="Reverse", 
-                                                 content=rroute))
-        box_layout.add_widget(route_panel)
+        box_layout.add_widget(self.selection_buttons())
 
+        # Station names depending on the direct/reverse selection.
+        route_names = None
+        if direction == "droute":
+            route_names = data.droute_names
+        elif direction == "rroute":
+            route_names = data.rroute_names
+
+        # Display routes as a list.
+        route = ListView(adapter=ListAdapter(data=route_names(tsb_app.selected_bus), 
+                                             cls=StationButton))     
+        box_layout.add_widget(route)
         self.add_widget(box_layout)
-        Window.bind(on_keyboard=self.on_back_button)
+
+    def selection_buttons(self):
+        direct_btn = MyButton(text="Direct", on_press=self.direct_selected)
+        reverse_btn = MyButton(text="Reverse", on_press=self.reverse_selected)
+        selection_btns = BoxLayout(size_hint_y=None, height="50dp")
+        selection_btns.add_widget(direct_btn)
+        selection_btns.add_widget(reverse_btn)
+        return selection_btns
+
+    # Direct route selected by user.
+    def direct_selected(self, instance):
+        tsb_app.selected_direction = "droute"
+        self.show_stations("droute")
+
+    # Reverse route selected by user.
+    def reverse_selected(self, instance):
+        tsb_app.selected_direction = "rroute"
+        self.show_stations("rroute")
 
     def on_back_button(self, window, key, *args):
         if key == 27:
@@ -109,24 +133,13 @@ class StationsList(BoxLayout):
     def show_buses(self):
         tsb_app.show_buses()
 
-class StationButtonDirect(ListItemButton, MyButton):
+class StationButton(ListItemButton, MyButton):
     def __init__(self, **kwargs):
-        super(StationButtonDirect, self).__init__(**kwargs)
+        super(StationButton, self).__init__(**kwargs)
         self.on_press = self.show_timetable
     
     def show_timetable(self):
         tsb_app.selected_station = self.text
-        tsb_app.selected_direction = "droute"
-        tsb_app.show_timetable()
-
-class StationButtonReverse(ListItemButton, MyButton):
-    def __init__(self, **kwargs):
-        super(StationButtonReverse, self).__init__(**kwargs)
-        self.on_press = self.show_timetable
-    
-    def show_timetable(self):
-        tsb_app.selected_station = self.text
-        tsb_app.selected_direction = "rroute"
         tsb_app.show_timetable()
 
         
