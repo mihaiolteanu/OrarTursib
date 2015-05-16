@@ -13,7 +13,7 @@ import data
 tsb_app = None
 
 class TsbApp(App):
-    content = BoxLayout()
+    content = BoxLayout(orientation="vertical")
     ## Keep track of where we are in the app.
     selected_bus = None
     selected_station = None
@@ -23,7 +23,7 @@ class TsbApp(App):
     def build(self):
         global tsb_app; tsb_app = self
         self._check_bus_network()
-        self.content.add_widget(BusesList())
+        self.show_buses()
         return self.content
 
     def _check_bus_network(self):
@@ -32,7 +32,9 @@ class TsbApp(App):
 
     def show_buses(self):
         self.content.clear_widgets()
+        self.content.add_widget(MyLabel(text="[b]{}[/b]".format("Orar Tursib")))
         self.content.add_widget(BusesList())
+        self.content.add_widget(MyLabel(text="[b]{}[/b]".format(data.update())))
 
     def show_stations(self):
         self.content.clear_widgets()

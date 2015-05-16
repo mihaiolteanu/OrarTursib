@@ -50,6 +50,14 @@ def buses():
     except Exception as e:
         return {"nothing to see here!"}
 
+# Return the last update string, if available.
+def update():
+    try:
+        return bus_network()['update']
+    except:
+        return ""
+        
+
 # Return all the info for the bus with this name.
 def _bus_info(bus_name):
     buses = bus_network()['buses']
