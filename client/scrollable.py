@@ -11,6 +11,7 @@ Builder.load_string('''
         height: self.texture_size[1]
         text_size: self.width, None
         text: root.text
+        font_size: "17sp"
         markup: True
 ''')
 

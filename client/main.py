@@ -40,7 +40,7 @@ class TsbApp(App):
 
     def show_timetable(self):
         self.content.clear_widgets()
-        self.content.add_widget(TimetableList(self.selected_bus, self.selected_station))
+        self.content.add_widget(TimetableList(self.selected_bus, self.selected_station, self.selected_direction))
 
 
 # Standard button to be used throughout the application.
@@ -59,6 +59,7 @@ class BusesList(BoxLayout):
             adapter=ListAdapter(data=data.buses(), cls=BusButton)))
         Window.bind(on_keyboard=self.on_back_button)
 
+    # Rebind the back button to exit the application.
     def on_back_button(self, window, key, *args):
         if key == 27:
             App.get_running_app().stop()
@@ -144,14 +145,17 @@ class StationButton(ListItemButton, MyButton):
 
         
 class TimetableList(BoxLayout):
-    def __init__(self, selected_bus, selected_station, **kwargs):
+    def __init__(self, bus, station, direction, **kwargs):
         super(TimetableList, self).__init__(**kwargs)
         self.orientation = "vertical"
+        self.bus = bus
+        self.station = station
+        self.direction = direction
         box_layout = BoxLayout(orientation="vertical")
 
         # Display the bus and station name at the top of the page.
-        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(selected_bus)))
-        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(selected_station)))
+        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(self.bus)))
+        box_layout.add_widget(MyLabel(text="[b]{}[/b]".format(self.station)))
         box_layout.add_widget(ScrollableLabel(text=self.timetable(), 
                                               markup=True))
 
@@ -159,10 +163,10 @@ class TimetableList(BoxLayout):
         Window.bind(on_keyboard=self.on_back_button)
 
     def timetable(self):
-        ttable = data.timetable(tsb_app.selected_bus,
-                                tsb_app.selected_station,
-                                tsb_app.selected_direction)
-        formated = "  [b]Weekdays[/b]:\n {} \n [b]Saturday[/b]:\n {} \n [b]Sunday[/b]:\n {}".format(
+        ttable = data.timetable(self.bus, self.station, self.direction)
+        if not ttable:
+            return ""
+        formated = "   __________\n\n  [b]Luni - Vineri[/b]:\n {} \n\n [b]Sambata[/b]:\n {} \n\n [b]Duminica[/b]:\n {}".format(
             ", ".join(ttable['weekdays']),
             ", ".join(ttable['saturday']),
             ", ".join(ttable['sunday']))
@@ -185,7 +189,12 @@ class MyLabel(Label):
         self.size_hint_y = None
         self.height = "40dp"
         self.markup = True
-
+        self.font_size = "17sp"
+        # Wrap text around if greater than the label width
+        # https://groups.google.com/forum/#!topic/kivy-users/RvIvhe0tQm8
+        self.bind(size=self.setter('text_size')) 
+        self.halign = "center"
+        self.valign = "middle"
 
 if __name__ == '__main__':
     TsbApp().run()
