@@ -96,12 +96,14 @@ class StationsList(BoxLayout):
         # Station names depending on the direct/reverse selection.
         route_names = None
         if direction == "droute":
-            route_names = data.droute_names
+            tsb_app.selected_direction = "droute"
+            route_names = data.droute_names(self.selected_bus)
         elif direction == "rroute":
-            route_names = data.rroute_names
+            tsb_app.selected_direction = "rroute"
+            route_names = data.rroute_names(self.selected_bus)
 
         # Display routes as a list.
-        route = ListView(adapter=ListAdapter(data=route_names(tsb_app.selected_bus), 
+        route = ListView(adapter=ListAdapter(data=route_names, 
                                              cls=StationButton))     
         box_layout.add_widget(route)
         self.add_widget(box_layout)
@@ -116,12 +118,10 @@ class StationsList(BoxLayout):
 
     # Direct route selected by user.
     def direct_selected(self, instance):
-        tsb_app.selected_direction = "droute"
         self.show_stations("droute")
 
     # Reverse route selected by user.
     def reverse_selected(self, instance):
-        tsb_app.selected_direction = "rroute"
         self.show_stations("rroute")
 
     def on_back_button(self, window, key, *args):
@@ -158,11 +158,10 @@ class TimetableList(BoxLayout):
         self.add_widget(box_layout)
         Window.bind(on_keyboard=self.on_back_button)
 
-
     def timetable(self):
         ttable = data.timetable(tsb_app.selected_bus,
-                                  tsb_app.selected_station,
-                                  tsb_app.selected_direction)
+                                tsb_app.selected_station,
+                                tsb_app.selected_direction)
         formated = "  [b]Weekdays[/b]:\n {} \n [b]Saturday[/b]:\n {} \n [b]Sunday[/b]:\n {}".format(
             ", ".join(ttable['weekdays']),
             ", ".join(ttable['saturday']),
