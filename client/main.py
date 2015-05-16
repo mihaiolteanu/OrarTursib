@@ -2,50 +2,45 @@ import kivy
 from kivy.app import App
 from kivy.uix.button import Button, Label
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelHeader
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.listview import ListView, ListItemButton
 from kivy.adapters.listadapter import ListAdapter
-from kivy.properties import ObjectProperty, ListProperty
 from kivy.core.window import Window
 from scrollable import ScrollableLabel
-
 import data
 
 # Keep track of the root object.
 tsb_app = None
 
 class TsbApp(App):
-    tp = BoxLayout()
-    buses_tab_content = tp
+    content = BoxLayout()
+    ## Keep track of where we are in the app.
     selected_bus = None
     selected_station = None
-    # Used to diferentiate between the direct and reverse
-    # routes after a station name is selected from the bus
-    # station names.
+    # Diferentiate between the direct and reverse routes.
     selected_direction = None
 
     def build(self):
         global tsb_app; tsb_app = self
         self._check_bus_network()
-        self.tp.add_widget(BusesList())
-        return self.tp
+        self.content.add_widget(BusesList())
+        return self.content
 
     def _check_bus_network(self):
         if not data.bus_network_exists():
             data.request_bus_network()
 
     def show_buses(self):
-        self.buses_tab_content.clear_widgets()
-        self.buses_tab_content.add_widget(BusesList())
+        self.content.clear_widgets()
+        self.content.add_widget(BusesList())
 
     def show_stations(self):
-        self.buses_tab_content.clear_widgets()
-        self.buses_tab_content.add_widget(StationsList(self.selected_bus))
+        self.content.clear_widgets()
+        self.content.add_widget(StationsList(self.selected_bus))
 
     def show_timetable(self):
-        self.buses_tab_content.clear_widgets()
-        self.buses_tab_content.add_widget(TimetableList(self.selected_bus, self.selected_station))
+        self.content.clear_widgets()
+        self.content.add_widget(TimetableList(self.selected_bus, self.selected_station))
 
 
 # Standard button to be used throughout the application.
@@ -170,6 +165,7 @@ class TimetableList(BoxLayout):
     def show_stations(self):
         tsb_app.show_stations()
 
+
 # Standard label to be used throughout the application.
 class MyLabel(Label):
     def __init__(self, **kwargs):
@@ -178,8 +174,6 @@ class MyLabel(Label):
         self.height = "40dp"
         self.markup = True
 
-
-    
 
 if __name__ == '__main__':
     TsbApp().run()
