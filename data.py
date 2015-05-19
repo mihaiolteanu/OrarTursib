@@ -1,6 +1,5 @@
 # Features:
 # - get the complete tursib bus network in a single dictionary.
-# - get the latest tursib news in a single list.
 # - get a string specifing the latest update to the bus network 
 #   available on tursib. This string is also included in the complete
 #   tursib bus network response as a dictionary entry.
@@ -16,17 +15,6 @@
 import tsbparser as parser
 from utils import htmlget as htmlget
 #from tests.utils_mock import htmlget as htmlget
-
-def news():
-    """:return: [{'publishdate': '...', 'newscontent': '...'}, {'publishdate':...}]"""
-    result = []
-    # Get the http links to the latest news from the tursib official page.
-    links = parser.news_links(htmlget("tursib_ro"))
-    for link in links:
-        content = parser.news_content(htmlget(link))
-        result.append(content)
-    # Return the content of all the latest news found.
-    return result
 
 def update():
     return parser.update_string(htmlget("trasee"))

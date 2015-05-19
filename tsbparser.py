@@ -1,5 +1,5 @@
 # Provides functions to retrieve all the necessary information from tursib.ro regarding bus routes,
-# bus numbers and names, bus timetables, latest updates and latest news.
+# bus numbers and names, bus timetables and latest updates.
 # This info is web-scraped from html pages from tursib.ro. Please consult these html
 # pages for a better understanding of the algorithms implemented to extract the needed data.
 # The parsing is made somewhat harder by the fact that the routes are sometimes not identical at different departure
@@ -8,35 +8,6 @@
 
 from bs4 import BeautifulSoup
 import utils
-
-def news_content(html_news_page):
-    """Extracts the news content from a html page.
-    :param html_news_page: html page such as http://tursib.ro/news/show/160, where 160 is the news ID
-    :return: [12 Feb 2015, 'Incepand cu data de 16.02.2015, se inchide circulatia pe str. ...]"""
-    bs = BeautifulSoup(html_news_page)
-    result = {'publishdate': None, 'newscontent': None}  
-    all_divs = bs.find_all('div', {'class': 'section'})
-    for div in all_divs:
-        if div.find('div', {'class': 'continut'}):
-            try:
-                result['publishdate'] = div.h2.text
-                result['newscontent'] = utils.remove_non_ascii(div.div.text)
-            except AttributeError:
-                # No such tags exist, so probably this is not a news page.
-                pass
-
-    return result
-
-
-def news_links(tursib_ro):
-    """Returns the links to the latest news (usually three) posted by Tursib on their official page.
-    :param tursib_ro: html page from www.tursib.ro
-    :return ['http://tursib.ro/news/show/160', 'http://tursib.ro/news/show/159', 'http://tursib.ro/news/show/158']"""
-    bs = BeautifulSoup(tursib_ro)
-    return [p.a['href']
-            for p in bs.find_all('p', {'class': 'more'})
-            if p.text == "Detalii"]
-
 
 def update_string(tursib_ro_trasee):
     """
