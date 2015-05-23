@@ -1,10 +1,8 @@
 import urllib.parse
 import urllib.request
 import logging
-import datetime
-import os
 
-# Tursib official website with all the needed info.
+# Tursib official website.
 base = "http://www.tursib.ro"
 
 logging.basicConfig(level=logging.DEBUG)
@@ -22,12 +20,4 @@ def htmlget(address):
         return response.read()
     except urllib.error.HTTPError as e:
         logger.info("{} could not be found".format(path))
-        return (path, e)
-
-
-
-path, res = htmlget(base + "/abc")
-print(path)
-print(res)
-
-logger.debug("what uuup")
+        return ""

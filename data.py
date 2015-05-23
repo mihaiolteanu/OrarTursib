@@ -17,18 +17,22 @@ from utils import htmlget as htmlget
 #from tests.utils_mock import htmlget as htmlget
 
 def update():
-    return parser.update_string(htmlget("trasee"))
-
-def bus_network_latest_update():
-    """Returns a string containing the info regarding the last update of the bus network."""
-    return parser.update_string(htmlget("trasee"))
+    """
+    String containing the last tursib update info.
+    """
+    tursib_ro_trasee = htmlget("trasee")
+    return parser.update_string(tursib_ro_trasee)
 
 def bus_network():
-    """Build the list with all tursib info."""
-    buseslist = parser.buses_list(htmlget("trasee"))
+    """
+    Build the list with all tursib info.
+    """
+    tursib_ro_trasee = htmlget("trasee")
+    buseslist = parser.buses_list(tursib_ro_trasee)
     buses = []
     for bus in buseslist:
-        stations = parser.bus_stations(htmlget(bus['link']))
+        tursib_ro_traseu_x = htmlget(bus['link'])
+        stations = parser.bus_stations(tursib_ro_traseu_x)
         buses.append({"name": "{} - {}".format(bus['number'], bus['name']), 
                       "droute": _get_direct_stations(stations), 
                       "rroute": _get_reverse_stations(stations)})
@@ -43,7 +47,8 @@ def _get_reverse_stations(stations):
 def _get_station_name_and_timetable(station_name_link):
     result = []
     for station in station_name_link:
-        timetable = parser.station_timetable(htmlget(station['link']))
+        tursib_ro_traseu_statie = htmlget(station['link'])
+        timetable = parser.station_timetable(tursib_ro_traseu_statie)
         result.append({'name': station['name'], 'timetable': timetable})
     return result
 
@@ -55,6 +60,3 @@ f = open("output.json", 'w')
 f.write(encoded)
 f.close()
 """
-
-#res = news()
-#print(res)
