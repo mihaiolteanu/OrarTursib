@@ -78,6 +78,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# Do not ignore buildozer.spec 
+!buildozer.spec
+
 venv*/
 logfile
 client/.buildozer
