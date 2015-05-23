@@ -6,6 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.listview import ListView, ListItemButton
 from kivy.adapters.listadapter import ListAdapter
 from kivy.core.window import Window
+from kivy.graphics import Color, Rectangle
 from scrollable import ScrollableLabel
 import data
 
@@ -22,9 +23,23 @@ class TsbApp(App):
 
     def build(self):
         global tsb_app; tsb_app = self
+        self._set_background_color()
         self._check_bus_network()
         self.show_buses()
         return self.content
+
+    def _set_background_color(self):
+        """
+        http://kivy.org/docs/guide/widgets.html#adding-a-background-to-a-layout
+        """
+        with self.content.canvas.before:
+            Color(0.019, 0.454, 0.470, 1)
+            self.content.rect = Rectangle(size=self.content.size,
+                                          pos=self.content.pos)
+        def update_rect(instance, value):
+            instance.rect.pos = instance.pos
+            instance.rect.size = instance.size
+        self.content.bind(pos=update_rect, size=update_rect)        
 
     def _check_bus_network(self):
         if not data.bus_network_exists():
