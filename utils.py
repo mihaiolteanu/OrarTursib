@@ -1,30 +1,33 @@
 import urllib.parse
-import requests
+import urllib.request
+import logging
 import datetime
 import os
 
-# Retrieve html page from web.
+# Tursib official website with all the needed info.
 base = "http://www.tursib.ro"
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# The function accepts relative addresses and 
+# merely apends these to the base address. It 
+# then returns the content of the page found 
+# at the address thus constructed.
 def htmlget(address):
     path = urllib.parse.urljoin(base, address)
-    resp = requests.get(path)
-    return resp.text
+    req = urllib.request.Request(path)
+    try:
+        response = urllib.request.urlopen(req)
+        return response.read()
+    except urllib.error.HTTPError as e:
+        logger.info("{} could not be found".format(path))
+        return (path, e)
 
-def remove_non_ascii(s):
-    return "".join(i for i in s if ord(i)<126 and ord(i)>31)
 
-# Months names in Romanian
-months_name_ro = {
-    'ianuarie': 1, # January
-    'februarie': 2,
-    'martie': 3,
-    'aprilie': 4,
-    'mai': 5,
-    'iunie': 6,
-    'iulie': 7,
-    'august': 8,
-    'septembrie': 9,
-    'octombrie': 10,
-    'noiembrie': 11,
-    'decembrie': 12 # December
-}
+
+path, res = htmlget(base + "/abc")
+print(path)
+print(res)
+
+logger.debug("what uuup")
