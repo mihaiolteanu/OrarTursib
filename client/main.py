@@ -175,14 +175,7 @@ class TimetableList(BoxLayout):
         Window.bind(on_keyboard=self.on_back_button)
 
     def timetable(self):
-        ttable = data.timetable(self.bus, self.station, self.direction)
-        if not ttable:
-            return ""
-        formated = "   __________\n\n  [b]Luni - Vineri[/b]:\n {} \n\n [b]Sambata[/b]:\n {} \n\n [b]Duminica[/b]:\n {}".format(
-            ", ".join(ttable['weekdays']),
-            ", ".join(ttable['saturday']),
-            ", ".join(ttable['sunday']))
-        return formated
+        return data.formated_timetable(self.bus, self.station, self.direction)
 
     def on_back_button(self, window, key, *args):
         if key == 27:

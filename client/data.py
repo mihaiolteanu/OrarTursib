@@ -100,3 +100,13 @@ def timetable(bus_name, station_name, direction):
         logging.error("tsbapp - \"{}\" station name does not exist".format(station_name))
         return []
     return station['timetable']
+
+def formated_timetable(bus_name, station_name, direction):
+    ttable = timetable(bus_name, station_name, direction)
+    formated = "______\n\n"
+    for idx, item in enumerate(ttable):
+        ttable_name = "[b]{}:[/b] \n".format(ttable[idx][0])
+        ttable_content = "{} \n\n".format(", ".join(ttable[idx][1]))
+        formated += ttable_name
+        formated += ttable_content
+    return formated
