@@ -33,7 +33,7 @@ class TsbApp(App):
         http://kivy.org/docs/guide/widgets.html#adding-a-background-to-a-layout
         """
         with self.content.canvas.before:
-            Color(0.019, 0.454, 0.470, 1)
+            Color(0.35, 0.35, 0.35, 1)
             self.content.rect = Rectangle(size=self.content.size,
                                           pos=self.content.pos)
         def update_rect(instance, value):
@@ -49,7 +49,6 @@ class TsbApp(App):
         self.content.clear_widgets()
         self.content.add_widget(MyLabel(text="[b]{}[/b]".format("Orar Tursib")))
         self.content.add_widget(BusesList())
-        self.content.add_widget(MyLabel(text=data.update()))
 
     def show_stations(self):
         self.content.clear_widgets()
