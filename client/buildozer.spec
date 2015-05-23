@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = Tsb
+title = Orar Tursib
 
 # (str) Package name
-package.name = hello
+package.name = fm.fastmail.mihai_olteanu.orartursib
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.test
+package.domain = fm.fastmail.mihai_olteanu
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -43,10 +43,10 @@ requirements = kivy
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/icon_splash.png
+presplash.filename = %(source.dir)s/pics/icon_splash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/icon.png
+icon.filename = %(source.dir)s/pics/icon.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = all
@@ -148,7 +148,7 @@ android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 2
+# log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = False, 1 = True)
 warn_on_root = 1
