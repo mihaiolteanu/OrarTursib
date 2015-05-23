@@ -7,11 +7,6 @@ from flask import jsonify
 app = Flask(__name__)
 api = restful.Api(app)
 
-class News(restful.Resource):
-    def get(self):
-        ret = {"news": persistence.get_news()}
-        return jsonify(ret)
-
 class Update(restful.Resource):
     def get(self):
         return persistence.get_network_update()
@@ -26,8 +21,10 @@ def home():
 
 @app.route('/updatebusnetwork')
 def update_bus_network():
-    """Get a newer version of bus info if available.
-    Run this periodically."""
+    """
+    Get a newer version of bus info if available.
+    Run this periodically.
+    """
     # Download and save to local storage if a different version is available.
     if _new_version_available():
         network = data.bus_network()
@@ -45,8 +42,6 @@ def _tursib_version():
 def _local_version():
     return persistence.get_network_update()
 
-
-api.add_resource(News, '/news')
 api.add_resource(Update, '/update')
 api.add_resource(BusNewtork, '/busnetwork')
 

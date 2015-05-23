@@ -118,7 +118,7 @@ def station_timetable(tursib_ro_traseu_statie):
     # Either return normal timetables or else return an empty result.
     return result
 
-
+'''
 # Functions for manual testing.
 import os
 
@@ -155,3 +155,4 @@ def tsbparser_test():
 
 if __name__ == "__main__":
     tsbparser_test()
+'''
