@@ -37,7 +37,7 @@ def _new_version_available():
     return _tursib_version() != _local_version()
 
 def _tursib_version():
-    return data.bus_network_latest_update()
+    return data.update()
 
 def _local_version():
     return persistence.get_network_update()
