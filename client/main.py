@@ -39,10 +39,18 @@ class TsbApp(App):
         def update_rect(instance, value):
             instance.rect.pos = instance.pos
             instance.rect.size = instance.size
-        self.content.bind(pos=update_rect, size=update_rect)        
+        self.content.bind(pos=update_rect, size=update_rect)
 
     def _check_bus_network(self):
         if not data.bus_network_exists():
+            data.request_bus_network()
+            return
+        # No info can be returned from web (no internet connection, for example)
+        # or bus network info is not available from the device.
+        if not data.update_string_web() or not data.update_string_local():
+            return
+        # A new bus network is available on tursib.ro.
+        if data.update_string_web() != data.update_string_local():
             data.request_bus_network()
 
     def show_buses(self):

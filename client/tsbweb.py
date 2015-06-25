@@ -17,18 +17,12 @@ def request_bus_network():
     except Exception as e:
         logging.error("tsbapp - {}".format(e))
 
-
-"""
-def request_bus_network():
-    logging.info("tsbapp - request_bus_network()")
-    req = UrlRequest(tsbserver + "busnetwork", 
-                     on_success=retrieve_bus_network,
-                     on_error=retrieve_fail)
-
-def retrieve_bus_network(req, result):
-    logging.info("tsbapp - retrieve_bus_network()")
-    persistence.save_bus_network(result)
-    
-def retrieve_fail(req, error):
-    logging.error("tsbapp - {}".format(error))
-"""
+def request_update_string():
+    try:
+        response = request.urlopen(web_update_string)
+        response_str = response.read().decode('utf-8')
+        # Withot the replace, the string would look like '"update_string_sample"'
+        return response_str.replace("\"", "")
+    except Exception as e:
+        logging.error("tsbapp - {}".format(e))
+        return ""

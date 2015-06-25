@@ -9,12 +9,12 @@ import logging
 _bus_network = {}
 
 # Only returns true if the bus network information
-# has already been downloaded from the web on the 
+# has already been downloaded from the web on the
 # local device.
 def bus_network_exists():
     return persistence.bus_network_file_exists()
 
-# Request a new download of the bus network from 
+# Request a new download of the bus network from
 # the web. This should be called the very first time
 # the app is running after installation. Can also
 # be called in case an update is needed.
@@ -22,7 +22,7 @@ def request_bus_network():
     tsbweb.request_bus_network()
 
 # Return the bus network in one single dictionary.
-# Returns a local cached value if the function was 
+# Returns a local cached value if the function was
 # already called before.
 def bus_network():
     global _bus_network
@@ -50,13 +50,16 @@ def bus_names():
     except Exception as e:
         return []
 
-# Return the last update string, if available.
-def update():
+# Get the update string available locally on the device.
+def update_string_local():
     try:
         return bus_network()['update']
     except:
         return ""
-        
+
+# Get the update string available from the tursib.ro page.
+def update_string_web():
+    return tsbweb.request_update_string()
 
 # Return all the info for the bus with this name.
 def _bus_info(bus_name):
