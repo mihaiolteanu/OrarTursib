@@ -29,7 +29,7 @@ source.include_exts = py,png,jpg,kv,atlas
 #version.filename = %(source.dir)s/main.py
 
 # (str) Application versioning (method 2)
-version = 0.1.1
+version = 0.1.2
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
@@ -49,7 +49,7 @@ presplash.filename = %(source.dir)s/pics/icon_splash.png
 icon.filename = %(source.dir)s/pics/icon.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
-orientation = all
+orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
